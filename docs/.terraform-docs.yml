@@ -1,0 +1,12 @@
+formatter: "markdown"
+output:
+  file: "README.md"
+  mode: replace
+
+sections:
+  hide:
+    - resources
+    - modules
+
+header-from: ./docs/_header.md
+footer-from: ./docs/_footer.md
