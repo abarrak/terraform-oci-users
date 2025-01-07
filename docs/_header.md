@@ -18,12 +18,9 @@ Provison and manage the following resources in OCI:
 
 ```hcl
 module "local-users" {
-  source    = "abarrak/oci-users"
-  version   = "1.0.0"
+  source  = "abarrak/users/oci"
+  version = "1.0.0"
 
-  providers = {
-    oci    = oci
-  }
   tenancy_id     = var.tenancy_id
   compartment_id = var.compartment_id
 
