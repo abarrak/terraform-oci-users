@@ -8,7 +8,7 @@ variable "compartment_id" {
   type        = string
 }
 
-variable "local_svc_account_users" {
+variable "local_users" {
   description = "A list of local users or service accounts to provision including group name and policy statements list."
   type        = list(object({ username = string, group = string, description = string, policy = list(string) }))
   default     = []

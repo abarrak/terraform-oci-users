@@ -1,3 +1,4 @@
+<!-- BEGIN_TF_DOCS -->
 # Terraform OCI Local Users
 
 [![Lints](https://github.com/abarrak/terraform-oci-users/actions/workflows/format.yml/badge.svg)](https://github.com/abarrak/terraform-oci-users/actions/workflows/format.yml) [![Docs](https://github.com/abarrak/terraform-oci-users/actions/workflows/docs.yml/badge.svg)](https://github.com/abarrak/terraform-oci-users/actions/workflows/docs.yml) [![Security](https://github.com/abarrak/terraform-oci-users/actions/workflows/security.yml/badge.svg)](https://github.com/abarrak/terraform-oci-users/actions/workflows/security.yml)
@@ -24,7 +25,7 @@ module "local-users" {
   tenancy_id     = var.tenancy_id
   compartment_id = var.compartment_id
 
-  local_svc_account_users = [
+  local_users = [
     {
       username    = "rclone-sa",
       group       = "rclone-sa-group",
@@ -63,7 +64,7 @@ module "local-users" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | The OCID of compartment to provison resources in (except tenancy-level resources). | `string` | n/a | yes |
-| <a name="input_local_svc_account_users"></a> [local\_svc\_account\_users](#input\_local\_svc\_account\_users) | A list of local users or service accounts to provision including group name and policy statements list. | `list(object({ username = string, group = string, description = string, policy = list(string) }))` | `[]` | no |
+| <a name="input_local_users"></a> [local\_users](#input\_local\_users) | A list of local users or service accounts to provision including group name and policy statements list. | `list(object({ username = string, group = string, description = string, policy = list(string) }))` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | (Optional) tags to attach to the provisioned resources. | `map(any)` | n/a | yes |
 | <a name="input_tenancy_id"></a> [tenancy\_id](#input\_tenancy\_id) | The OCID of tenancy. | `string` | n/a | yes |
 

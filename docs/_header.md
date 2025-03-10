@@ -24,7 +24,7 @@ module "local-users" {
   tenancy_id     = var.tenancy_id
   compartment_id = var.compartment_id
 
-  local_svc_account_users = [
+  local_users = [
     {
       username    = "rclone-sa",
       group       = "rclone-sa-group",

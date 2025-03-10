@@ -1,5 +1,5 @@
-resource "oci_identity_user" "local_svc_account_users" {
-  for_each = { for idx, u in var.local_svc_account_users : u.username => u }
+resource "oci_identity_user" "local_users" {
+  for_each = { for idx, u in var.local_users : u.username => u }
 
   compartment_id = var.tenancy_id
   name           = each.value.username
@@ -8,8 +8,8 @@ resource "oci_identity_user" "local_svc_account_users" {
   freeform_tags = var.tags
 }
 
-resource "oci_identity_group" "local_svc_account_groups" {
-  for_each = { for idx, u in var.local_svc_account_users : u.group => u }
+resource "oci_identity_group" "local_groups" {
+  for_each = { for idx, u in var.local_users : u.group => u }
 
   compartment_id = var.tenancy_id
   name           = each.value.group
@@ -18,8 +18,8 @@ resource "oci_identity_group" "local_svc_account_groups" {
   freeform_tags = var.tags
 }
 
-resource "oci_identity_policy" "local_svc_account_policies" {
-  for_each = { for idx, u in var.local_svc_account_users : u.group => u }
+resource "oci_identity_policy" "local_policies" {
+  for_each = { for idx, u in var.local_users : u.group => u }
 
   compartment_id = var.compartment_id
   name           = each.value.group
@@ -29,15 +29,15 @@ resource "oci_identity_policy" "local_svc_account_policies" {
   freeform_tags = var.tags
 }
 
-resource "oci_identity_user_group_membership" "local_svc_account_memberships" {
-  for_each = { for idx, u in var.local_svc_account_users : u.group => u }
+resource "oci_identity_user_group_membership" "local_memberships" {
+  for_each = { for idx, u in var.local_users : u.group => u }
 
-  user_id  = oci_identity_user.local_svc_account_users[each.value.username].id
-  group_id = oci_identity_group.local_svc_account_groups[each.key].id
+  user_id  = oci_identity_user.local_users[each.value.username].id
+  group_id = oci_identity_group.local_groups[each.key].id
 }
 
-resource "oci_identity_user_capabilities_management" "local_svc_account_capabilities" {
-  for_each = oci_identity_user.local_svc_account_users
+resource "oci_identity_user_capabilities_management" "local_capabilities" {
+  for_each = oci_identity_user.local_users
 
   user_id = each.value.id
 
@@ -49,15 +49,15 @@ resource "oci_identity_user_capabilities_management" "local_svc_account_capabili
 }
 
 
-resource "oci_identity_customer_secret_key" "local_svc_account_secret_keys" {
-  for_each = oci_identity_user.local_svc_account_users
+resource "oci_identity_customer_secret_key" "local_users_secret_keys" {
+  for_each = oci_identity_user.local_users
 
   user_id      = each.value.id
   display_name = "${each.value.name}-customer-key"
 }
 
-resource "oci_vault_secret" "local_svc_account_customer_secret_keys" {
-  for_each = oci_identity_customer_secret_key.local_svc_account_secret_keys
+resource "oci_vault_secret" "local_users_customer_secret_keys" {
+  for_each = oci_identity_customer_secret_key.local_users_secret_keys
 
   compartment_id = var.compartment_id
   vault_id       = data.oci_kms_vaults.compartment_vaults.vaults[0].id
@@ -78,8 +78,8 @@ resource "oci_vault_secret" "local_svc_account_customer_secret_keys" {
   }
 }
 
-resource "oci_vault_secret" "local_svc_account_oci_s3_credentials" {
-  for_each = oci_identity_customer_secret_key.local_svc_account_secret_keys
+resource "oci_vault_secret" "local_users_oci_s3_format_credentials" {
+  for_each = oci_identity_customer_secret_key.local_users_secret_keys
 
   compartment_id = var.compartment_id
   vault_id       = data.oci_kms_vaults.compartment_vaults.vaults[0].id
