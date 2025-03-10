@@ -14,6 +14,19 @@ variable "local_users" {
   default     = []
 }
 
+variable "capabilities" {
+  description = "(Optional) The capabilities allowed and provisioned for local users or service accounts."
+  type        = object({ api_keys = string, auth_tokens = string, smtp_credentials = string,
+                         console_password = string, customer_secret_keys = string })
+  default     = {
+    api_keys = "true",
+    auth_tokens = "false",
+    smtp_credentials = "false",
+    console_password = "false",
+    customer_secret_keys = "true"
+  }
+}
+
 variable "tags" {
   description = "(Optional) tags to attach to the provisioned resources."
   type        = map(any)

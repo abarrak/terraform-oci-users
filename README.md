@@ -63,6 +63,7 @@ module "local-users" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_capabilities"></a> [capabilities](#input\_capabilities) | (Optional) The capabilities allowed and provisioned for local users or service accounts. | <pre>object({ api_keys = string, auth_tokens = string, smtp_credentials = string,<br/>                         console_password = string, customer_secret_keys = string })</pre> | <pre>{<br/>  "api_keys": "true",<br/>  "auth_tokens": "false",<br/>  "console_password": "false",<br/>  "customer_secret_keys": "true",<br/>  "smtp_credentials": "false"<br/>}</pre> | no |
 | <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | The OCID of compartment to provison resources in (except tenancy-level resources). | `string` | n/a | yes |
 | <a name="input_local_users"></a> [local\_users](#input\_local\_users) | A list of local users or service accounts to provision including group name and policy statements list. | `list(object({ username = string, group = string, description = string, policy = list(string) }))` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | (Optional) tags to attach to the provisioned resources. | `map(any)` | n/a | yes |

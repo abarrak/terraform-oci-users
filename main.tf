@@ -41,23 +41,23 @@ resource "oci_identity_user_capabilities_management" "local_capabilities" {
 
   user_id = each.value.id
 
-  can_use_api_keys             = "true"
-  can_use_auth_tokens          = "false"
-  can_use_smtp_credentials     = "false"
-  can_use_console_password     = "false"
-  can_use_customer_secret_keys = "true"
+  can_use_api_keys             = var.local_users_capabilities.api_keys
+  can_use_auth_tokens          = var.local_users_capabilities.auth_tokens
+  can_use_smtp_credentials     = var.local_users_capabilities.smtp_credentials
+  can_use_console_password     = var.local_users_capabilities.console_password
+  can_use_customer_secret_keys = var.local_users_capabilities.customer_secret_keys
 }
 
 
 resource "oci_identity_customer_secret_key" "local_users_secret_keys" {
-  for_each = oci_identity_user.local_users
+  for_each = bool(var.capabilities.customer_secret_keys) ? oci_identity_user.local_users : []
 
   user_id      = each.value.id
   display_name = "${each.value.name}-customer-key"
 }
 
 resource "oci_vault_secret" "local_users_customer_secret_keys" {
-  for_each = oci_identity_customer_secret_key.local_users_secret_keys
+  for_each = bool(var.capabilities.customer_secret_keys) ? oci_identity_customer_secret_key.local_users_secret_keys : []
 
   compartment_id = var.compartment_id
   vault_id       = data.oci_kms_vaults.compartment_vaults.vaults[0].id
@@ -79,7 +79,7 @@ resource "oci_vault_secret" "local_users_customer_secret_keys" {
 }
 
 resource "oci_vault_secret" "local_users_oci_s3_format_credentials" {
-  for_each = oci_identity_customer_secret_key.local_users_secret_keys
+  for_each = bool(var.capabilities.customer_secret_keys) ? oci_identity_customer_secret_key.local_users_secret_keys : []
 
   compartment_id = var.compartment_id
   vault_id       = data.oci_kms_vaults.compartment_vaults.vaults[0].id
