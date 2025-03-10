@@ -48,6 +48,36 @@ resource "oci_identity_user_capabilities_management" "local_capabilities" {
   can_use_customer_secret_keys = var.local_users_capabilities.customer_secret_keys
 }
 
+resource "tls_private_key" "local_users_rsa_api_keys" {
+  for_each = bool(var.capabilities.api_keys) ? oci_identity_user.local_users : []
+
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "oci_identity_api_key" "local_users_api_keys" {
+  for_each = bool(var.capabilities.api_keys) ? oci_identity_user.local_users : []
+
+  user_id   = each.value.id
+  key_value = tls_private_key.local_users_rsa_api_keys[each.index].public_key_pem
+}
+
+resource "oci_vault_secret" "local_users_api_keys_secret" {
+  for_each = bool(var.capabilities.api_keys) ? oci_identity_customer_secret_key.local_users_api_keys : []
+
+  compartment_id = var.compartment_id
+  vault_id       = data.oci_kms_vaults.compartment_vaults.vaults[0].id
+  key_id         = data.oci_kms_keys.compartment_keys.keys[0].id
+
+  secret_name = "${each.value.display_name}-api-key"
+
+  secret_content {
+    content_type = "BASE64"
+    stage        = "CURRENT"
+    name         = "${each.value.display_name}-api-key"
+    content = base64encode(tls_private_key.local_users_rsa_api_keys[each.index].private_key_pem)
+  }
+}
 
 resource "oci_identity_customer_secret_key" "local_users_secret_keys" {
   for_each = bool(var.capabilities.customer_secret_keys) ? oci_identity_user.local_users : []
@@ -91,6 +121,8 @@ resource "oci_vault_secret" "local_users_oci_s3_format_credentials" {
     content_type = "BASE64"
     stage        = "CURRENT"
     name         = "${each.value.display_name}-oci-creds"
-    content      = base64encode("[default]\naws_access_key_id=${each.value.id}\naws_secret_access_key=${each.value.key}\n")
+    content      = base64encode(
+      "[default]\naws_access_key_id=${each.value.id}\naws_secret_access_key=${each.value.key}\n"
+    )
   }
 }

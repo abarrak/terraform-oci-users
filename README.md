@@ -3,7 +3,7 @@
 
 [![Lints](https://github.com/abarrak/terraform-oci-users/actions/workflows/format.yml/badge.svg)](https://github.com/abarrak/terraform-oci-users/actions/workflows/format.yml) [![Docs](https://github.com/abarrak/terraform-oci-users/actions/workflows/docs.yml/badge.svg)](https://github.com/abarrak/terraform-oci-users/actions/workflows/docs.yml) [![Security](https://github.com/abarrak/terraform-oci-users/actions/workflows/security.yml/badge.svg)](https://github.com/abarrak/terraform-oci-users/actions/workflows/security.yml)
 
-This module provides ability to create and manage users with groups and polices in oracle cloud (OCI).
+This module provides ability to create and manage users and service accounts with groups and polices in oracle cloud (OCI).
 
 ## Features
 
@@ -14,6 +14,11 @@ Provison and manage the following resources in OCI:
 4. API Keys.
 5. Customer Secret Keys (for S3).
 6. Persistence of authentication secrets in `Vault` secrets.
+
+## Dependency
+
+Vault is required when provisiong api keys and tokens.<br>
+The main one in compartment is queried daynamically in `data.tf` and used.
 
 ## Usage
 
@@ -27,12 +32,12 @@ module "local-users" {
 
   local_users = [
     {
-      username    = "rclone-sa",
-      group       = "rclone-sa-group",
-      description = "A service account for rclone."
+      username    = "my-sa",
+      group       = "my-sa-group",
+      description = "A service account for some bucket integrations service account."
       policy      = [
-        "Allow group rclone-group to read buckets in compartment A",
-        "Allow group rclone-group to use buckets in compartment A"
+        "Allow group my-sa-group to read buckets in compartment A",
+        "Allow group my-sa-group to use buckets in compartment B"
       ]
     }
   ]
@@ -45,12 +50,14 @@ module "local-users" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3 |
 | <a name="requirement_oci"></a> [oci](#requirement\_oci) | >= 5.9.0 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 4.0.4 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_oci"></a> [oci](#provider\_oci) | 6.21.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.6 |
 
 ## Resources
 
@@ -76,6 +83,8 @@ module "local-users" {
 | <a name="output_local_group_ids"></a> [local\_group\_ids](#output\_local\_group\_ids) | The ocid value for the local svc-account user groups. |
 | <a name="output_local_policies_ids"></a> [local\_policies\_ids](#output\_local\_policies\_ids) | The ocid value for the local svc-account user policies. |
 | <a name="output_local_user_statuses"></a> [local\_user\_statuses](#output\_local\_user\_statuses) | The status for the local svc-account users. |
+| <a name="output_local_users_api_key_fingerprints"></a> [local\_users\_api\_key\_fingerprints](#output\_local\_users\_api\_key\_fingerprints) | The key's fingerprint (e.g., 12:34:56:78:90:ab:cd:ef:12:34:56:78:90:ab:cd:ef). |
+| <a name="output_local_users_api_key_ids"></a> [local\_users\_api\_key\_ids](#output\_local\_users\_api\_key\_ids) | An Oracle-assigned identifier for the key, in this format: TENANCY\_OCID/USER\_OCID/KEY\_FINGERPRINT. |
 | <a name="output_local_users_ids"></a> [local\_users\_ids](#output\_local\_users\_ids) | The ocid values for the local svc-account users. |
 
 # License
